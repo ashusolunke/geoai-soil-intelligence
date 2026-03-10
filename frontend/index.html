@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>GeoAI - Soil Intelligence Platform</title>
+
+<link rel="stylesheet" href="style.css">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+</head>
+
+<body>
+
+<header class="navbar">
+
+<div class="logo">GeoAI</div>
+
+<nav>
+<ul>
+<li><a href="#home">Home</a></li>
+<li><a href="#scanner">AI Scanner</a></li>
+<li><a href="#construction">Construction</a></li>
+<li><a href="#agriculture">Agriculture</a></li>
+<li><a href="#contact">Contact</a></li>
+</ul>
+</nav>
+
+</header>
+
+
+<!-- HERO -->
+
+<section class="hero" id="home">
+
+<div class="hero-left">
+
+<h1>
+Engineering the Ground <br>
+with <span>AI Intelligence</span>
+</h1>
+
+<p>
+Advanced soil analysis for construction stability and smart agriculture.
+Upload an image and let AI evaluate soil composition instantly.
+</p>
+
+<div class="hero-buttons">
+<a href="#scanner"><button class="scan">Scan Soil</button></a>
+<a href="#soil-report">
+<button class="report">
+View Soil Report
+</button>
+</a>
+</div>
+
+<div class="stats">
+
+<div>
+<h2>98%</h2>
+<p>Detection Accuracy</p>
+</div>
+
+<div>
+<h2>120+</h2>
+<p>Soil Samples Tested</p>
+</div>
+
+<div>
+<h2>15+</h2>
+<p>Construction Projects</p>
+</div>
+
+</div>
+
+</div>
+
+
+<div class="hero-right">
+
+<div class="soil-card">
+
+<h3>Live Soil Analysis</h3>
+
+<p>Type: <span id="heroSoil">--</span></p>
+<p>Moisture: <span id="heroMoisture">--</span></p>
+<p>Load Strength: <span id="heroStrength">--</span></p>
+
+</div>
+
+</div>
+
+</section>
+
+
+<!-- AI SCANNER -->
+
+<section class="scanner" id="scanner">
+
+<h2>AI Soil Scanner</h2>
+
+<p class="scanner-sub">
+Upload a soil image or scan using camera to analyze soil composition instantly.
+</p>
+
+<div class="scanner-container">
+
+<div class="upload-box">
+<p>Drag & Drop Soil Image</p>
+<input type="file" id="fileInput">
+<button class="upload-btn">Upload Image</button>
+</div>
+
+<div class="scan-actions">
+<button class="camera-btn">📷 Open Camera</button>
+<button class="analyze-btn">🔬 Analyze Soil</button>
+</div>
+
+</div>
+
+<div class="analysis-box">
+
+<h3>AI Soil Report</h3>
+
+<div class="result-cards">
+
+<div class="result">
+<p>Soil Type</p>
+<h4 id="soilType">--</h4>
+</div>
+
+<div class="result">
+<p>Moisture</p>
+<h4 id="moisture">--</h4>
+</div>
+
+<div class="result">
+<p>Strength</p>
+<h4 id="strength">--</h4>
+</div>
+
+</div>
+
+<div class="progress-bar">
+<div class="progress" id="progress"></div>
+</div>
+
+</div>
+
+</section>
+
+
+<!-- DASHBOARD -->
+
+<section class="dashboard">
+
+<h2>Soil Intelligence Dashboard</h2>
+
+<p class="dashboard-sub">
+AI powered insights from your soil sample
+</p>
+
+<div class="dashboard-container">
+
+<div class="chart-card">
+<h3>Soil pH Level</h3>
+<canvas id="phChart"></canvas>
+</div>
+
+<div class="chart-card">
+<h3>Moisture Level</h3>
+<canvas id="moistureChart"></canvas>
+</div>
+
+<div class="chart-card">
+<h3>Fertility Score</h3>
+<canvas id="fertilityChart"></canvas>
+</div>
+
+</div>
+
+</section>
+
+
+<!-- SOIL LAYERS -->
+
+<section class="soil-layers">
+
+<h2>Understanding Soil Structure</h2>
+
+<p class="layer-sub">
+Explore the layers beneath the surface that influence construction stability and crop growth.
+</p>
+
+<div class="layers-container">
+
+<div class="layer topsoil">
+<h3>Topsoil</h3>
+<p>Rich in nutrients and organic matter. Important for agriculture.</p>
+</div>
+
+<div class="layer subsoil">
+<h3>Subsoil</h3>
+<p>Contains minerals and supports plant roots and structural strength.</p>
+</div>
+
+<div class="layer parent">
+<h3>Parent Material</h3>
+<p>Weathered rock fragments that influence soil composition.</p>
+</div>
+
+<div class="layer bedrock">
+<h3>Bedrock</h3>
+<p>Solid rock layer providing deep foundation support.</p>
+</div>
+
+</div>
+
+</section>
+
+
+<!-- CONSTRUCTION -->
+
+<section class="construction" id="construction">
+
+<h2>Construction Soil Analysis</h2>
+
+<div class="construction-grid">
+
+<div class="construction-card">
+<h3>Load Bearing Test</h3>
+<p>AI evaluates soil capacity to support structures.</p>
+</div>
+
+<div class="construction-card">
+<h3>Foundation Stability</h3>
+<p>Ensure buildings have safe ground support.</p>
+</div>
+
+<div class="construction-card">
+<h3>Infrastructure Planning</h3>
+<p>Better road and bridge planning using soil data.</p>
+</div>
+
+</div>
+
+</section>
+
+
+<!-- AGRICULTURE -->
+
+<section class="agriculture" id="agriculture">
+
+<h2>Agricultural Soil Intelligence</h2>
+
+<div class="agri-grid">
+
+<div class="agri-card">
+<h3>Crop Recommendation</h3>
+<p>Suggest crops suitable for the detected soil.</p>
+</div>
+
+<div class="agri-card">
+<h3>Fertility Analysis</h3>
+<p>Analyze nutrient levels and organic content.</p>
+</div>
+
+<div class="agri-card">
+<h3>Irrigation Planning</h3>
+<p>Predict water retention and irrigation needs.</p>
+</div>
+
+</div>
+
+</section>
+
+
+<!-- CONTACT -->
+
+<section class="contact" id="contact">
+
+<h2>Request Soil Analysis</h2>
+
+<p class="contact-sub">
+Submit your soil sample details and our AI system will help analyze it.
+</p>
+
+<div class="contact-container">
+
+<form class="contact-form">
+
+<input type="text" placeholder="Your Name" required>
+<input type="email" placeholder="Email Address" required>
+<input type="text" placeholder="Soil Sample Location">
+
+<textarea rows="4" placeholder="Describe the soil sample or project..."></textarea>
+
+<button type="submit">Submit Request</button>
+
+</form>
+
+</div>
+
+</section>
+
+
+<footer class="footer">
+
+<p>© 2026 GeoAI Soil Intelligence Platform</p>
+
+</footer>
+
+
+<script src="script.js"></script>
+
+</body>
+
+</html>
