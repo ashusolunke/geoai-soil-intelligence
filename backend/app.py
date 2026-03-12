@@ -5,7 +5,7 @@ import numpy as np
 from PIL import Image
 import os
 
-# Create Flask app
+# Initialize Flask
 app = Flask(__name__)
 CORS(app)
 
@@ -35,27 +35,48 @@ soil_data = {
     "Yellow_Soil": {"moisture": "Low", "strength": "Low"}
 }
 
+# Crop recommendations
+crop_data = {
+    "Alluvial_Soil": ["Rice", "Wheat", "Sugarcane"],
+    "Arid_Soil": ["Millet", "Barley", "Cotton"],
+    "Black_Soil": ["Cotton", "Soybean", "Sunflower"],
+    "Laterite_Soil": ["Cashew", "Tea", "Coffee"],
+    "Mountain_Soil": ["Apple", "Potato", "Maize"],
+    "Red_Soil": ["Groundnut", "Millet", "Pulses"],
+    "Yellow_Soil": ["Maize", "Potato", "Oilseeds"]
+}
+
 
 @app.route("/predict", methods=["POST"])
 def predict():
+    try:
 
-    file = request.files["image"]
+        if "image" not in request.files:
+            return jsonify({"error": "No image uploaded"}), 400
 
-    # preprocess image
-    img = Image.open(file).resize((128, 128))
-    img = np.array(img) / 255.0
-    img = np.expand_dims(img, axis=0)
+        file = request.files["image"]
 
-    # prediction
-    prediction = model.predict(img)
-    soil = classes[np.argmax(prediction)]
+        # Preprocess image
+        img = Image.open(file).convert("RGB")
+        img = img.resize((128, 128))
+        img = np.array(img) / 255.0
+        img = np.expand_dims(img, axis=0)
 
-    # return response
-    return jsonify({
-        "soil_type": soil,
-        "moisture": soil_data[soil]["moisture"],
-        "strength": soil_data[soil]["strength"]
-    })
+        # Model prediction
+        prediction = model.predict(img)
+        soil_index = np.argmax(prediction)
+        soil = classes[soil_index]
+
+        # Response
+        return jsonify({
+            "soil_type": soil,
+            "moisture": soil_data[soil]["moisture"],
+            "strength": soil_data[soil]["strength"],
+            "crops": crop_data[soil]
+        })
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 
 if __name__ == "__main__":

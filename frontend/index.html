@@ -114,8 +114,14 @@ Upload a soil image or scan using camera to analyze soil composition instantly.
 </div>
 
 <div class="scan-actions">
-<button class="camera-btn">📷 Open Camera</button>
+
+<button class="camera-btn" onclick="openCamera()">📷 Open Camera</button>
+
+<video id="camera" autoplay
+style="display:none;width:200px;border-radius:10px;"></video>
+
 <button class="analyze-btn">🔬 Analyze Soil</button>
+
 </div>
 
 </div>
@@ -139,6 +145,11 @@ Upload a soil image or scan using camera to analyze soil composition instantly.
 <div class="result">
 <p>Strength</p>
 <h4 id="strength">--</h4>
+</div>
+
+<div class="result">
+<p>Recommended Crops</p>
+<h4 id="crops">--</h4>
 </div>
 
 </div>
