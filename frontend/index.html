@@ -9,15 +9,14 @@
 
 <link rel="stylesheet" href="style.css">
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
-
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
 </head>
 
 <body>
 
 <header class="navbar">
-
 <div class="logo">GeoAI</div>
 
 <nav>
@@ -29,7 +28,6 @@
 <li><a href="#contact">Contact</a></li>
 </ul>
 </nav>
-
 </header>
 
 
@@ -51,37 +49,14 @@ Upload an image and let AI evaluate soil composition instantly.
 
 <div class="hero-buttons">
 <a href="#scanner"><button class="scan">Scan Soil</button></a>
-<a href="#dashboard">
-<button class="report">View Soil Report</button>
-</a>
-</div>
-
-<div class="stats">
-
-<div>
-<h2>98%</h2>
-<p>Detection Accuracy</p>
-</div>
-
-<div>
-<h2>120+</h2>
-<p>Soil Samples Tested</p>
-</div>
-
-<div>
-<h2>15+</h2>
-<p>Construction Projects</p>
+<a href="#dashboard"><button class="report">View Soil Report</button></a>
 </div>
 
 </div>
-
-</div>
-
 
 <div class="hero-right">
 
 <div class="soil-card">
-
 <h3>Live Soil Analysis</h3>
 
 <p>Type: <span id="heroSoil">--</span></p>
@@ -101,10 +76,6 @@ Upload an image and let AI evaluate soil composition instantly.
 
 <h2>AI Soil Scanner</h2>
 
-<p class="scanner-sub">
-Upload a soil image or scan using camera to analyze soil composition instantly.
-</p>
-
 <div class="scanner-container">
 
 <div class="upload-box">
@@ -117,8 +88,7 @@ Upload a soil image or scan using camera to analyze soil composition instantly.
 
 <button class="camera-btn" onclick="openCamera()">📷 Open Camera</button>
 
-<video id="camera" autoplay
-style="display:none;width:200px;border-radius:10px;"></video>
+<video id="camera" autoplay style="display:none;width:200px;border-radius:10px;"></video>
 
 <button class="analyze-btn">🔬 Analyze Soil</button>
 
@@ -152,11 +122,19 @@ style="display:none;width:200px;border-radius:10px;"></video>
 <h4 id="crops">--</h4>
 </div>
 
+<div class="result">
+<p>Prediction Confidence</p>
+<h4 id="confidence">--</h4>
 </div>
 
-<div class="progress-bar">
-<div class="progress" id="progress"></div>
+<div class="result">
+<p>Soil Health Score</p>
+<h4 id="healthScore">--</h4>
 </div>
+
+</div>
+
+<button onclick="downloadReport()">Download Soil Report</button>
 
 </div>
 
@@ -165,13 +143,9 @@ style="display:none;width:200px;border-radius:10px;"></video>
 
 <!-- DASHBOARD -->
 
-<section class="dashboard">
+<section class="dashboard" id="dashboard">
 
 <h2>Soil Intelligence Dashboard</h2>
-
-<p class="dashboard-sub">
-AI powered insights from your soil sample
-</p>
 
 <div class="dashboard-container">
 
@@ -193,47 +167,6 @@ AI powered insights from your soil sample
 </div>
 
 </section>
-
-
-<!-- SOIL LAYERS -->
-
-<section class="soil-layers">
-
-<h2>Understanding Soil Structure</h2>
-
-<p class="layer-sub">
-Explore the layers beneath the surface that influence construction stability and crop growth.
-</p>
-
-<div class="layers-container">
-
-<div class="layer topsoil">
-<h3>Topsoil</h3>
-<p>Rich in nutrients and organic matter. Important for agriculture.</p>
-</div>
-
-<div class="layer subsoil">
-<h3>Subsoil</h3>
-<p>Contains minerals and supports plant roots and structural strength.</p>
-</div>
-
-<div class="layer parent">
-<h3>Parent Material</h3>
-<p>Weathered rock fragments that influence soil composition.</p>
-</div>
-
-<div class="layer bedrock">
-<h3>Bedrock</h3>
-<p>Solid rock layer providing deep foundation support.</p>
-</div>
-
-</div>
-
-</section>
-
-
-<!-- CONSTRUCTION -->
-
 <section class="construction" id="construction">
 
 <h2>Construction Soil Analysis</h2>
@@ -258,10 +191,6 @@ Explore the layers beneath the surface that influence construction stability and
 </div>
 
 </section>
-
-
-<!-- AGRICULTURE -->
-
 <section class="agriculture" id="agriculture">
 
 <h2>Agricultural Soil Intelligence</h2>
@@ -286,10 +215,19 @@ Explore the layers beneath the surface that influence construction stability and
 </div>
 
 </section>
+<section class="map-section">
 
+<h2>GeoAI Soil Map</h2>
+<p class="map-sub">Click any location to explore soil insights</p>
 
-<!-- CONTACT -->
+<div id="soilMap"></div>
 
+<div class="map-result">
+<p><b>Location:</b> <span id="mapLocation">--</span></p>
+<p><b>Estimated Soil:</b> <span id="mapSoil">--</span></p>
+</div>
+
+</section>
 <section class="contact" id="contact">
 
 <h2>Request Soil Analysis</h2>
@@ -316,16 +254,11 @@ Submit your soil sample details and our AI system will help analyze it.
 
 </section>
 
-
 <footer class="footer">
-
 <p>© 2026 GeoAI Soil Intelligence Platform</p>
-
 </footer>
-
 
 <script src="script.js"></script>
 
 </body>
-
 </html>

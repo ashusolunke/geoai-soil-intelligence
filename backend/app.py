@@ -4,6 +4,7 @@ import tensorflow as tf
 import numpy as np
 from PIL import Image
 import os
+import sqlite3
 
 # Initialize Flask
 app = Flask(__name__)
@@ -12,6 +13,24 @@ CORS(app)
 # Load trained model
 model_path = os.path.join(os.path.dirname(__file__), "model.h5")
 model = tf.keras.models.load_model(model_path)
+
+# Create database if not exists
+conn = sqlite3.connect("soil_history.db")
+cursor = conn.cursor()
+
+cursor.execute("""
+CREATE TABLE IF NOT EXISTS history (
+id INTEGER PRIMARY KEY AUTOINCREMENT,
+soil_type TEXT,
+moisture TEXT,
+strength TEXT,
+confidence REAL,
+health_score INTEGER
+)
+""")
+
+conn.commit()
+conn.close()
 
 # Soil classes
 classes = [
@@ -62,21 +81,88 @@ def predict():
         img = np.array(img) / 255.0
         img = np.expand_dims(img, axis=0)
 
-        # Model prediction
+        # Prediction
         prediction = model.predict(img)
+
         soil_index = np.argmax(prediction)
         soil = classes[soil_index]
 
-        # Response
+        confidence = float(np.max(prediction)) * 100
+
+        # Calculate Soil Health Score
+        health_score = 0
+
+        if soil_data[soil]["moisture"] == "High":
+            health_score += 40
+        elif soil_data[soil]["moisture"] == "Medium":
+            health_score += 30
+        else:
+            health_score += 20
+
+        if soil_data[soil]["strength"] == "High":
+            health_score += 40
+        elif soil_data[soil]["strength"] == "Medium":
+            health_score += 30
+        else:
+            health_score += 20
+
+        health_score += 20
+
+        # Save prediction to database
+        conn = sqlite3.connect("soil_history.db")
+        cursor = conn.cursor()
+
+        cursor.execute("""
+        INSERT INTO history (soil_type, moisture, strength, confidence, health_score)
+        VALUES (?, ?, ?, ?, ?)
+        """, (
+            soil,
+            soil_data[soil]["moisture"],
+            soil_data[soil]["strength"],
+            confidence,
+            health_score
+        ))
+
+        conn.commit()
+        conn.close()
+
+        # Return response
         return jsonify({
             "soil_type": soil,
+            "confidence": round(confidence, 2),
             "moisture": soil_data[soil]["moisture"],
             "strength": soil_data[soil]["strength"],
-            "crops": crop_data[soil]
+            "crops": crop_data[soil],
+            "health_score": health_score
         })
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+
+
+@app.route("/history", methods=["GET"])
+def history():
+
+    conn = sqlite3.connect("soil_history.db")
+    cursor = conn.cursor()
+
+    cursor.execute("SELECT * FROM history ORDER BY id DESC LIMIT 10")
+    rows = cursor.fetchall()
+
+    conn.close()
+
+    history_data = []
+
+    for row in rows:
+        history_data.append({
+            "soil_type": row[1],
+            "moisture": row[2],
+            "strength": row[3],
+            "confidence": row[4],
+            "health_score": row[5]
+        })
+
+    return jsonify(history_data)
 
 
 if __name__ == "__main__":

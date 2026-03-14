@@ -687,3 +687,19 @@ filter:brightness(1.1);
 html{
 scroll-behavior:smooth;
 }
+#soilMap{
+height:400px;
+width:100%;
+border-radius:15px;
+margin-top:20px;
+}
+
+.map-section{
+text-align:center;
+padding:80px 10%;
+}
+
+.map-result{
+margin-top:20px;
+font-size:18px;
+}
