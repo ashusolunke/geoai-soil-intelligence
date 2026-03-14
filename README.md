@@ -45,13 +45,13 @@ This project combines **Machine Learning + Web Development + Data Visualization*
 ## 🖼 Project UI Preview
 
 ### Home Page
-![Home UI](assets/images/home.png)
+![Home UI]("C:\Users\KIIT0001\Documents\geoai-website\assets\images\home.png")
 
 ### AI Soil Scanner
-![Scanner UI](assets/images/scanner.png)
+![Scanner UI]("C:\Users\KIIT0001\Documents\geoai-website\assets\images\scanner.png")
 
 ### Soil Analysis Dashboard
-![Dashboard UI](assets/images/dashboard.png)
+![Dashboard UI]("C:\Users\KIIT0001\Documents\geoai-website\assets\images\dashboard.png")
 
 ### Prediction Result
 ![Prediction UI](assets/images/report.png)
