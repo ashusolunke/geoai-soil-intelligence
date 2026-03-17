@@ -146,9 +146,7 @@ geoai-soil-intelligence/
 ├── soil_history.db
 ├── README.md
 └── .gitignore
-```   ← end
-
----
+```   
 
 ---
 
