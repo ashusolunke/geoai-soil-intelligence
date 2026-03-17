@@ -148,21 +148,6 @@ geoai-soil-intelligence
 
 ---
 
-## ⚡ Installation & Setup
-
-```bash
-# Clone the repository
-git clone https://github.com/ashusolunke/geoai-soil-intelligence.git
-
-# Navigate to backend
-cd backend
-
-# Install dependencies
-pip install -r requirements.txt
-
-# Run the app
-python app.py
-
 ## 📌 Future Improvements
 
 - Geospatial Soil Mapping
