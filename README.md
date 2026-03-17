@@ -1,114 +1,123 @@
-# GeoAI Soil Intelligence Platform 🌍
+# 🌍 GeoAI Soil Intelligence Platform
 
-![Project Demo](images/demo.gif)
+<p align="center">
+  <img src="assets/images/home.png" width="80%" alt="GeoAI Banner"/>
+</p>
 
-AI-powered soil analysis platform that detects soil type from images and provides agricultural and construction insights.
-
-This project combines **Machine Learning + Web Development + Data Visualization** to build an intelligent soil analysis system.
+<p align="center">
+  <b>AI-powered Soil Analysis using Computer Vision + Deep Learning</b><br>
+  Detect soil type, predict health, and get smart agriculture & construction insights.
+</p>
 
 ---
 
 ## 🚀 Features
 
-- AI Soil Classification using Deep Learning
-- Soil Moisture and Strength Prediction
-- Crop Recommendation System
-- Soil Health Score Calculation
-- AI Confidence Score
-- Interactive Analytics Dashboard
-- Soil Scan History Tracking (SQLite Database)
-- Camera-based Soil Scanning
-- Downloadable Soil Analysis Report
-- Construction & Agriculture Insights
+- 🧠 AI Soil Classification (Deep Learning)
+- 💧 Soil Moisture Prediction
+- 🏗 Soil Strength Analysis
+- 🌱 Crop Recommendation System
+- 📊 Soil Health Score
+- 🎯 AI Confidence Score
+- 📈 Interactive Dashboard (Chart.js)
+- 📸 Camera-based Soil Scanning
+- 🗂 Scan History (SQLite Database)
+- 📄 Downloadable Soil Report
 
 ---
 
 ## 🧠 How It Works
 
-1. User uploads a soil image.
-2. The Flask backend processes the image.
-3. The trained deep learning model predicts the soil type.
-4. The system generates insights including:
-
-- Soil Type  
-- Moisture Level  
-- Soil Strength  
-- Crop Recommendations  
-- Confidence Score  
-- Soil Health Score  
-
-5. Results are displayed on an interactive dashboard.
-6. Each prediction is saved in a **SQLite database** for history tracking.
+1. Upload a soil image  
+2. Flask backend processes the image  
+3. Deep learning model predicts soil type  
+4. System generates insights:
+   - Soil Type  
+   - Moisture Level  
+   - Soil Strength  
+   - Crop Recommendation  
+   - Confidence Score  
+   - Soil Health Score  
+5. Results displayed on dashboard  
+6. Stored in SQLite database  
 
 ---
 
-## 🖼 Project UI Preview
+## 🖼️ UI Preview
 
-### Home Page
-![Home UI](geoai-website\assets\images\home.png)
+### 🏠 Home Page
+<p align="center">
+  <img src="assets/images/home.png" width="80%">
+</p>
 
-### AI Soil Scanner
-![Scanner UI]("C:\Users\KIIT0001\Documents\geoai-website\assets\images\scanner.png")
+### 📸 AI Soil Scanner
+<p align="center">
+  <img src="assets/images/scanner.png" width="80%">
+</p>
 
-### Soil Analysis Dashboard
-![Dashboard UI]("C:\Users\KIIT0001\Documents\geoai-website\assets\images\dashboard.png")
+### 📊 Soil Analysis Dashboard
+<p align="center">
+  <img src="assets/images/dashboard.png" width="80%">
+</p>
 
-### Prediction Result
-![Prediction UI](assets/images/report.png)
+### 📄 Prediction Result
+<p align="center">
+  <img src="assets/images/report.png" width="80%">
+</p>
 
-### Map 
-![map UI](assets/images/map.png)
-
-*(Place your screenshots inside the **images** folder)*
+### 🗺️ Map Insights
+<p align="center">
+  <img src="assets/images/map.png" width="80%">
+</p>
 
 ---
 
 ## 🏗 System Architecture
-User Interface (HTML / CSS / JavaScript)
-↓
-Flask Backend API
-↓
-TensorFlow Soil Classification Model
-↓
-SQLite Database (Scan History)
-↓
-Analytics Dashboard (Chart.js)
 
+Frontend (HTML, CSS, JS)  
+↓  
+Flask Backend API  
+↓  
+TensorFlow Model (.h5)  
+↓  
+SQLite Database  
+↓  
+Analytics Dashboard (Chart.js)  
 
 ---
 
 ## 🛠 Tech Stack
 
-### Machine Learning
+### 🤖 Machine Learning
 - Python
 - TensorFlow / Keras
 - NumPy
-- PIL (Image Processing)
+- PIL
 
-### Backend
+### ⚙️ Backend
 - Flask
 - Flask-CORS
 - SQLite
 
-### Frontend
+### 🎨 Frontend
 - HTML
 - CSS
 - JavaScript
 
-### Visualization
+### 📊 Visualization
 - Chart.js
 
 ---
 
-## 📊 Soil Types Supported
+## 🌱 Soil Types Supported
 
-- Alluvial Soil
-- Arid Soil
-- Black Soil
-- Laterite Soil
-- Mountain Soil
-- Red Soil
-- Yellow Soil
+- Alluvial Soil  
+- Arid Soil  
+- Black Soil  
+- Laterite Soil  
+- Mountain Soil  
+- Red Soil  
+- Yellow Soil  
 
 ---
 
@@ -136,6 +145,23 @@ geoai-soil-intelligence
 └── .gitignore
 
 ---
+
+---
+
+## ⚡ Installation & Setup
+
+```bash
+# Clone the repository
+git clone https://github.com/ashusolunke/geoai-soil-intelligence.git
+
+# Navigate to backend
+cd backend
+
+# Install dependencies
+pip install -r requirements.txt
+
+# Run the app
+python app.py
 
 ## 📌 Future Improvements
 
