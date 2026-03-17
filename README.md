@@ -122,27 +122,31 @@ Analytics Dashboard (Chart.js)
 ---
 
 ## 📂 Project Structure
-
-geoai-soil-intelligence
+```   ← start
+geoai-soil-intelligence/
 │
-├── backend
+├── backend/
 │ ├── app.py
 │ ├── model.h5
 │ └── requirements.txt
-├── frontend
+│
+├── frontend/
 │ ├── index.html
 │ ├── style.css
 │ └── script.js
 │
-├── images
+├── assets/
+│ └── images/
 │ ├── home.png
 │ ├── scanner.png
 │ ├── dashboard.png
-│ └── report.png
+│ ├── report.png
 │ └── map.png
 │
+├── soil_history.db
 ├── README.md
 └── .gitignore
+```   ← end
 
 ---
 
