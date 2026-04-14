@@ -213,17 +213,19 @@ margin-bottom:60px;
 
 .scanner-container{
 display:flex;
-justify-content:center;
+flex-direction:column;
 align-items:center;
-gap:60px;
-flex-wrap:wrap;
+gap:30px;
+margin-top:40px;
 }
 
 /* upload box */
 
 .upload-box{
-width:320px;
-height:200px;
+width:100%;
+max-width:480px;
+min-height:200px;
+height:auto;
 border:2px dashed rgba(255,255,255,0.2);
 border-radius:16px;
 display:flex;
@@ -231,13 +233,20 @@ flex-direction:column;
 align-items:center;
 justify-content:center;
 gap:15px;
+padding:24px;
+overflow:hidden;
 
 background:rgba(255,255,255,0.03);
 backdrop-filter:blur(10px);
+transition:border-color 0.3s ease;
 }
 
 .upload-box p{
 color:#aaa;
+}
+
+#fileInput{
+display:none;
 }
 
 .upload-btn{
@@ -253,8 +262,13 @@ cursor:pointer;
 
 .scan-actions{
 display:flex;
-flex-direction:column;
-gap:20px;
+flex-direction:row;
+align-items:center;
+justify-content:center;
+gap:16px;
+flex-wrap:wrap;
+width:100%;
+max-width:480px;
 }
 
 .camera-btn,
@@ -279,7 +293,7 @@ color:white;
 
 .analysis-box{
 margin-top:60px;
-max-width:500px;
+max-width:700px;
 margin-left:auto;
 margin-right:auto;
 }
@@ -639,12 +653,13 @@ font-size: clamp(40px,5vw,60px);
 }
 .upload-btn{
 background:linear-gradient(135deg,#3A7D44,#59b36c);
-padding:12px 26px;
+padding:14px 32px;
 border:none;
 border-radius:30px;
 color:white;
 cursor:pointer;
 transition:all 0.3s ease;
+font-size:15px;
 }
 
 .upload-btn:hover{
@@ -658,6 +673,7 @@ padding:14px 32px;
 border-radius:30px;
 cursor:pointer;
 transition:all 0.3s ease;
+font-size:15px;
 }
 
 .analyze-btn:hover{
@@ -671,6 +687,7 @@ padding:14px 32px;
 border-radius:30px;
 cursor:pointer;
 transition:0.3s;
+font-size:15px;
 }
 
 .camera-btn:hover{
@@ -711,9 +728,9 @@ font-size:18px;
 .image-preview{
 display:none;
 width:100%;
-max-width:280px;
-max-height:180px;
-object-fit:cover;
+max-width:100%;
+max-height:280px;
+object-fit:contain;
 border-radius:12px;
 margin-top:10px;
 border:1px solid rgba(255,255,255,0.15);
@@ -884,22 +901,19 @@ nav a{
 }
 
 .scanner-container{
-  flex-direction:column;
-  align-items:center;
-  gap:24px;
+  gap:20px;
 }
 
 .upload-box{
-  width:100%;
   max-width:100%;
-  height:auto;
   min-height:160px;
-  padding:24px 16px;
+  padding:20px 16px;
 }
 
 .scan-actions{
-  width:100%;
+  flex-direction:column;
   align-items:stretch;
+  max-width:100%;
 }
 
 .camera-btn,
