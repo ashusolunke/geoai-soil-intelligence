@@ -1,0 +1,13 @@
+.git
+.gitignore
+frontend/
+assets/
+dataset/
+geoai-soil-intelligence/
+*.db
+*.md
+render.yaml
+runtime.txt
+__pycache__/
+*.pyc
+.venv/

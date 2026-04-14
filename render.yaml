@@ -3,4 +3,4 @@ services:
     name: geoai-backend
     env: python
     buildCommand: "pip install -r backend/requirements.txt"
-    startCommand: "gunicorn backend.app:app"
+    startCommand: "uvicorn backend.app:app --host 0.0.0.0 --port 10000"

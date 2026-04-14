@@ -1,3 +1,13 @@
+---
+title: GeoAI Soil Intelligence
+emoji: 🌍
+colorFrom: green
+colorTo: yellow
+sdk: docker
+app_port: 7860
+pinned: false
+---
+
 # 🌍 GeoAI Soil Intelligence Platform
 
 <p align="center">
@@ -29,7 +39,7 @@
 ## 🧠 How It Works
 
 1. Upload a soil image  
-2. Flask backend processes the image  
+2. FastAPI backend processes the image  
 3. Deep learning model predicts soil type  
 4. System generates insights:
    - Soil Type  
@@ -76,7 +86,7 @@
 
 Frontend (HTML, CSS, JS)  
 ↓  
-Flask Backend API  
+FastAPI Backend (Hugging Face Spaces)  
 ↓  
 TensorFlow Model (.h5)  
 ↓  
@@ -95,8 +105,8 @@ Analytics Dashboard (Chart.js)
 - PIL
 
 ### ⚙️ Backend
-- Flask
-- Flask-CORS
+- FastAPI
+- Uvicorn
 - SQLite
 
 ### 🎨 Frontend
@@ -126,26 +136,19 @@ Analytics Dashboard (Chart.js)
 geoai-soil-intelligence/
 │
 ├── backend/
-│ ├── app.py
-│ ├── model.h5
+│ ├── app.py            ← FastAPI server
+│ ├── model.h5          ← trained TF model (~85MB)
 │ └── requirements.txt
 │
 ├── frontend/
 │ ├── index.html
 │ ├── style.css
-│ └── script.js
+│ ├── script.js
+│ └── config.js         ← API URL config
 │
-├── assets/
-│ └── images/
-│ ├── home.png
-│ ├── scanner.png
-│ ├── dashboard.png
-│ ├── report.png
-│ └── map.png
-│
-├── soil_history.db
+├── Dockerfile            ← HF Spaces / Railway
 ├── README.md
-└── .gitignore
+└── render.yaml
 ```   
 
 ---

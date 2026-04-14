@@ -1,38 +1,42 @@
-from flask import Flask, request, jsonify
-from flask_cors import CORS
+"""
+GeoAI Soil Intelligence — FastAPI Backend
+==========================================
+Converted from Flask to FastAPI for deployment on Hugging Face Spaces / Railway.
+
+Endpoints:
+  POST /predict   — Upload soil image → returns prediction JSON
+  GET  /history   — Last 10 predictions
+  GET  /health    — Liveness check
+"""
+
+from fastapi import FastAPI, File, UploadFile, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
+from contextlib import asynccontextmanager
 import tensorflow as tf
 import numpy as np
 from PIL import Image
+import io
 import os
 import sqlite3
+import logging
 
-# Initialize Flask
-app = Flask(__name__)
-CORS(app)
+# ---------------------------------------------------------------------------
+# Logging
+# ---------------------------------------------------------------------------
 
-# Load trained model
-model_path = os.path.join(os.path.dirname(__file__), "model.h5")
-model = tf.keras.models.load_model(model_path)
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger("geoai")
 
-# Create database if not exists
-conn = sqlite3.connect("soil_history.db")
-cursor = conn.cursor()
+# ---------------------------------------------------------------------------
+# Global model reference (loaded once at startup)
+# ---------------------------------------------------------------------------
 
-cursor.execute("""
-CREATE TABLE IF NOT EXISTS history (
-id INTEGER PRIMARY KEY AUTOINCREMENT,
-soil_type TEXT,
-moisture TEXT,
-strength TEXT,
-confidence REAL,
-health_score INTEGER
-)
-""")
+model = None
 
-conn.commit()
-conn.close()
+# ---------------------------------------------------------------------------
+# Soil domain data  (identical to original Flask app)
+# ---------------------------------------------------------------------------
 
-# Soil classes
 classes = [
     "Alluvial_Soil",
     "Arid_Soil",
@@ -40,56 +44,144 @@ classes = [
     "Laterite_Soil",
     "Mountain_Soil",
     "Red_Soil",
-    "Yellow_Soil"
+    "Yellow_Soil",
 ]
 
-# Soil properties
 soil_data = {
-    "Alluvial_Soil": {"moisture": "High", "strength": "Medium"},
-    "Arid_Soil": {"moisture": "Low", "strength": "Medium"},
-    "Black_Soil": {"moisture": "High", "strength": "High"},
-    "Laterite_Soil": {"moisture": "Medium", "strength": "Medium"},
-    "Mountain_Soil": {"moisture": "Medium", "strength": "High"},
-    "Red_Soil": {"moisture": "Low", "strength": "Medium"},
-    "Yellow_Soil": {"moisture": "Low", "strength": "Low"}
+    "Alluvial_Soil":  {"moisture": "High",   "strength": "Medium"},
+    "Arid_Soil":      {"moisture": "Low",    "strength": "Medium"},
+    "Black_Soil":     {"moisture": "High",   "strength": "High"},
+    "Laterite_Soil":  {"moisture": "Medium", "strength": "Medium"},
+    "Mountain_Soil":  {"moisture": "Medium", "strength": "High"},
+    "Red_Soil":       {"moisture": "Low",    "strength": "Medium"},
+    "Yellow_Soil":    {"moisture": "Low",    "strength": "Low"},
 }
 
-# Crop recommendations
 crop_data = {
-    "Alluvial_Soil": ["Rice", "Wheat", "Sugarcane"],
-    "Arid_Soil": ["Millet", "Barley", "Cotton"],
-    "Black_Soil": ["Cotton", "Soybean", "Sunflower"],
-    "Laterite_Soil": ["Cashew", "Tea", "Coffee"],
-    "Mountain_Soil": ["Apple", "Potato", "Maize"],
-    "Red_Soil": ["Groundnut", "Millet", "Pulses"],
-    "Yellow_Soil": ["Maize", "Potato", "Oilseeds"]
+    "Alluvial_Soil":  ["Rice", "Wheat", "Sugarcane"],
+    "Arid_Soil":      ["Millet", "Barley", "Cotton"],
+    "Black_Soil":     ["Cotton", "Soybean", "Sunflower"],
+    "Laterite_Soil":  ["Cashew", "Tea", "Coffee"],
+    "Mountain_Soil":  ["Apple", "Potato", "Maize"],
+    "Red_Soil":       ["Groundnut", "Millet", "Pulses"],
+    "Yellow_Soil":    ["Maize", "Potato", "Oilseeds"],
 }
 
+# ---------------------------------------------------------------------------
+# Database helper
+# ---------------------------------------------------------------------------
 
-@app.route("/predict", methods=["POST"])
-def predict():
+DB_PATH = os.path.join(os.path.dirname(__file__), "soil_history.db")
+
+
+def get_db():
+    """Return a new SQLite connection (thread-safe for read/write)."""
+    conn = sqlite3.connect(DB_PATH)
+    conn.execute("PRAGMA journal_mode=WAL")
+    return conn
+
+
+def init_db():
+    """Create the history table if it doesn't exist."""
+    conn = get_db()
+    conn.execute("""
+        CREATE TABLE IF NOT EXISTS history (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            soil_type TEXT,
+            moisture TEXT,
+            strength TEXT,
+            confidence REAL,
+            health_score INTEGER
+        )
+    """)
+    conn.commit()
+    conn.close()
+    logger.info("Database initialised: %s", DB_PATH)
+
+
+# ---------------------------------------------------------------------------
+# Lifespan: load model + init DB once at startup
+# ---------------------------------------------------------------------------
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    global model
+
+    # --- Startup ---
+    logger.info("Loading TensorFlow model…")
+    model_path = os.path.join(os.path.dirname(__file__), "model.h5")
+    model = tf.keras.models.load_model(model_path)
+    logger.info("Model loaded successfully from %s", model_path)
+
+    init_db()
+
+    yield  # app is running
+
+    # --- Shutdown ---
+    logger.info("Shutting down GeoAI backend")
+
+
+# ---------------------------------------------------------------------------
+# FastAPI app
+# ---------------------------------------------------------------------------
+
+app = FastAPI(
+    title="GeoAI Soil Intelligence API",
+    version="2.0.0",
+    lifespan=lifespan,
+)
+
+# CORS — allow all origins so the Vercel frontend can call this
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+
+# ---------------------------------------------------------------------------
+# Health check
+# ---------------------------------------------------------------------------
+
+@app.get("/")
+@app.get("/health")
+async def health():
+    return {"status": "ok", "model_loaded": model is not None}
+
+
+# ---------------------------------------------------------------------------
+# POST /predict  — core prediction endpoint
+# ---------------------------------------------------------------------------
+
+@app.post("/predict")
+async def predict(image: UploadFile = File(...)):
+    """
+    Accept a soil image, run the CNN model, return prediction.
+    Identical prediction logic to the original Flask endpoint.
+    """
+
+    # --- Validate file type ---
+    if not image.content_type or not image.content_type.startswith("image/"):
+        raise HTTPException(status_code=400, detail="Uploaded file is not an image")
+
     try:
-
-        if "image" not in request.files:
-            return jsonify({"error": "No image uploaded"}), 400
-
-        file = request.files["image"]
-
-        # Preprocess image
-        img = Image.open(file).convert("RGB")
+        # --- Read & preprocess (same as original) ---
+        contents = await image.read()
+        img = Image.open(io.BytesIO(contents)).convert("RGB")
         img = img.resize((128, 128))
-        img = np.array(img) / 255.0
-        img = np.expand_dims(img, axis=0)
+        img_array = np.array(img) / 255.0
+        img_array = np.expand_dims(img_array, axis=0)
 
-        # Prediction
-        prediction = model.predict(img)
+        # --- Prediction (same as original) ---
+        prediction = model.predict(img_array)
 
-        soil_index = np.argmax(prediction)
+        soil_index = int(np.argmax(prediction))
         soil = classes[soil_index]
-
         confidence = float(np.max(prediction)) * 100
 
-        # Calculate Soil Health Score
+        # --- Health score calculation (same as original) ---
         health_score = 0
 
         if soil_data[soil]["moisture"] == "High":
@@ -108,62 +200,65 @@ def predict():
 
         health_score += 20
 
-        # Save prediction to database
-        conn = sqlite3.connect("soil_history.db")
-        cursor = conn.cursor()
+        # --- Save to database ---
+        try:
+            conn = get_db()
+            conn.execute(
+                "INSERT INTO history (soil_type, moisture, strength, confidence, health_score) VALUES (?, ?, ?, ?, ?)",
+                (soil, soil_data[soil]["moisture"], soil_data[soil]["strength"], confidence, health_score),
+            )
+            conn.commit()
+            conn.close()
+        except Exception as db_err:
+            logger.warning("DB write failed (non-fatal): %s", db_err)
 
-        cursor.execute("""
-        INSERT INTO history (soil_type, moisture, strength, confidence, health_score)
-        VALUES (?, ?, ?, ?, ?)
-        """, (
-            soil,
-            soil_data[soil]["moisture"],
-            soil_data[soil]["strength"],
-            confidence,
-            health_score
-        ))
-
-        conn.commit()
-        conn.close()
-
-        # Return response
-        return jsonify({
+        # --- Return JSON (same shape as original) ---
+        return {
             "soil_type": soil,
             "confidence": round(confidence, 2),
             "moisture": soil_data[soil]["moisture"],
             "strength": soil_data[soil]["strength"],
             "crops": crop_data[soil],
-            "health_score": health_score
-        })
+            "health_score": health_score,
+        }
 
     except Exception as e:
-        return jsonify({"error": str(e)}), 500
+        logger.error("Prediction error: %s", e)
+        raise HTTPException(status_code=500, detail=str(e))
 
 
-@app.route("/history", methods=["GET"])
-def history():
+# ---------------------------------------------------------------------------
+# GET /history  — last 10 predictions
+# ---------------------------------------------------------------------------
 
-    conn = sqlite3.connect("soil_history.db")
-    cursor = conn.cursor()
+@app.get("/history")
+async def history():
+    try:
+        conn = get_db()
+        cursor = conn.cursor()
+        cursor.execute("SELECT * FROM history ORDER BY id DESC LIMIT 10")
+        rows = cursor.fetchall()
+        conn.close()
 
-    cursor.execute("SELECT * FROM history ORDER BY id DESC LIMIT 10")
-    rows = cursor.fetchall()
+        return [
+            {
+                "soil_type": row[1],
+                "moisture": row[2],
+                "strength": row[3],
+                "confidence": row[4],
+                "health_score": row[5],
+            }
+            for row in rows
+        ]
+    except Exception as e:
+        logger.error("History error: %s", e)
+        raise HTTPException(status_code=500, detail=str(e))
 
-    conn.close()
 
-    history_data = []
-
-    for row in rows:
-        history_data.append({
-            "soil_type": row[1],
-            "moisture": row[2],
-            "strength": row[3],
-            "confidence": row[4],
-            "health_score": row[5]
-        })
-
-    return jsonify(history_data)
-
+# ---------------------------------------------------------------------------
+# Local development entry point
+# ---------------------------------------------------------------------------
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    import uvicorn
+    uvicorn.run("app:app", host="0.0.0.0", port=7860, reload=True)
