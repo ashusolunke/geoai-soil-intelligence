@@ -19,7 +19,9 @@
 <header class="navbar">
 <div class="logo">GeoAI</div>
 
-<nav>
+<button class="nav-toggle" id="navToggle" aria-label="Toggle navigation">☰</button>
+
+<nav id="navMenu">
 <ul>
 <li><a href="#home">Home</a></li>
 <li><a href="#scanner">AI Scanner</a></li>
@@ -259,6 +261,23 @@ Submit your soil sample details and our AI system will help analyze it.
 </footer>
 
 <script src="script.js"></script>
+
+<script>
+// Mobile nav toggle
+const navToggle = document.getElementById('navToggle');
+const navMenu = document.getElementById('navMenu');
+navToggle.addEventListener('click', () => {
+  navMenu.classList.toggle('nav-open');
+  navToggle.textContent = navMenu.classList.contains('nav-open') ? '✕' : '☰';
+});
+// Close nav when a link is clicked
+navMenu.querySelectorAll('a').forEach(link => {
+  link.addEventListener('click', () => {
+    navMenu.classList.remove('nav-open');
+    navToggle.textContent = '☰';
+  });
+});
+</script>
 
 </body>
 </html>
