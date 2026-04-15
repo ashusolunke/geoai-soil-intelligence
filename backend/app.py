@@ -12,7 +12,7 @@ Endpoints:
 from fastapi import FastAPI, File, UploadFile, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
-import tensorflow as tf
+import tflite_runtime.interpreter as tflite
 import numpy as np
 from PIL import Image
 import io
@@ -31,7 +31,9 @@ logger = logging.getLogger("geoai")
 # Global model reference (loaded once at startup)
 # ---------------------------------------------------------------------------
 
-model = None
+interpreter = None
+input_details = None
+output_details = None
 
 # ---------------------------------------------------------------------------
 # Soil domain data  (identical to original Flask app)
@@ -105,12 +107,15 @@ def init_db():
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    global model
+    global interpreter, input_details, output_details
 
     # --- Startup ---
-    logger.info("Loading TensorFlow model…")
-    model_path = os.path.join(os.path.dirname(__file__), "model.h5")
-    model = tf.keras.models.load_model(model_path)
+    logger.info("Loading TFLite model…")
+    model_path = os.path.join(os.path.dirname(__file__), "model.tflite")
+    interpreter = tflite.Interpreter(model_path=model_path)
+    interpreter.allocate_tensors()
+    input_details = interpreter.get_input_details()
+    output_details = interpreter.get_output_details()
     logger.info("Model loaded successfully from %s", model_path)
 
     init_db()
@@ -173,9 +178,12 @@ async def predict(image: UploadFile = File(...)):
         img = img.resize((128, 128))
         img_array = np.array(img) / 255.0
         img_array = np.expand_dims(img_array, axis=0)
+        img_array = img_array.astype(np.float32)
 
-        # --- Prediction (same as original) ---
-        prediction = model.predict(img_array)
+        # --- Prediction (using TFLite) ---
+        interpreter.set_tensor(input_details[0]['index'], img_array)
+        interpreter.invoke()
+        prediction = interpreter.get_tensor(output_details[0]['index'])
 
         soil_index = int(np.argmax(prediction))
         soil = classes[soil_index]

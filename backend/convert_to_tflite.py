@@ -30,5 +30,5 @@ with open(TFLITE_PATH, "wb") as f:
 
 h5_size = os.path.getsize(H5_PATH) / (1024 * 1024)
 tflite_size = os.path.getsize(TFLITE_PATH) / (1024 * 1024)
-print(f"Done!  {H5_PATH} ({h5_size:.1f} MB) → {TFLITE_PATH} ({tflite_size:.2f} MB)")
+print(f"Done!  {H5_PATH} ({h5_size:.1f} MB) -> {TFLITE_PATH} ({tflite_size:.2f} MB)")
 print(f"Size reduction: {(1 - tflite_size/h5_size)*100:.0f}%")
