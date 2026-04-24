@@ -17,4 +17,4 @@
  *   API_BASE_URL + "/history"
  */
 
-const API_BASE_URL = "https://geoai-soil-intelligence.onrender.com";
+const API_BASE_URL = "https://geoai-backend-r52p.onrender.com";
