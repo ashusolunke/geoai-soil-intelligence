@@ -1,5 +1,6 @@
 fastapi
 uvicorn
+gunicorn
 numpy<2
 opencv-python
 --extra-index-url https://google-coral.github.io/py-repo/
