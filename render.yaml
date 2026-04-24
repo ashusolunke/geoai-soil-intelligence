@@ -2,5 +2,5 @@ services:
   - type: web
     name: geoai-backend
     env: python
-    buildCommand: "pip install --default-timeout=1000 --retries 5 -r backend/requirements.txt"
-    startCommand: "uvicorn backend.app:app --host 0.0.0.0 --port 10000"
+    buildCommand: "pip install --default-timeout=1000 --retries 5 --extra-index-url https://google-coral.github.io/py-repo/ -r backend/requirements.txt"
+    startCommand: "cd backend && uvicorn app:app --host 0.0.0.0 --port $PORT"

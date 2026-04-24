@@ -10,9 +10,13 @@ Endpoints:
 """
 
 from fastapi import FastAPI, File, UploadFile, HTTPException
+from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
-import tflite_runtime.interpreter as tflite
+try:
+    import tflite_runtime.interpreter as tflite
+except ImportError:
+    from tensorflow import lite as tflite
 import numpy as np
 from PIL import Image
 import io
@@ -153,7 +157,7 @@ app.add_middleware(
 @app.get("/")
 @app.get("/health")
 async def health():
-    return {"status": "ok", "model_loaded": model is not None}
+    return {"status": "ok", "model_loaded": interpreter is not None}
 
 
 # ---------------------------------------------------------------------------
@@ -232,7 +236,7 @@ async def predict(image: UploadFile = File(...)):
 
     except Exception as e:
         logger.error("Prediction error: %s", e)
-        raise HTTPException(status_code=500, detail=str(e))
+        return JSONResponse(status_code=500, content={"error": str(e), "status": "failed"})
 
 
 # ---------------------------------------------------------------------------
