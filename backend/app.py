@@ -18,8 +18,7 @@ try:
 except ImportError:
     from tensorflow import lite as tflite
 import numpy as np
-from PIL import Image
-import io
+import cv2
 import os
 import sqlite3
 import logging
@@ -178,11 +177,14 @@ async def predict(image: UploadFile = File(...)):
     try:
         # --- Read & preprocess (same as original) ---
         contents = await image.read()
-        img = Image.open(io.BytesIO(contents)).convert("RGB")
-        img = img.resize((128, 128))
-        img_array = np.array(img) / 255.0
+        img_array = np.frombuffer(contents, dtype=np.uint8)
+        img = cv2.imdecode(img_array, cv2.IMREAD_COLOR)
+        if img is None:
+            raise HTTPException(status_code=400, detail="Uploaded file is not a valid image")
+        img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+        img = cv2.resize(img, (128, 128))
+        img_array = img.astype(np.float32) / 255.0
         img_array = np.expand_dims(img_array, axis=0)
-        img_array = img_array.astype(np.float32)
 
         # --- Prediction (using TFLite) ---
         interpreter.set_tensor(input_details[0]['index'], img_array)
