@@ -1,13 +1,3 @@
----
-title: GeoAI Soil Intelligence
-emoji: 🌍
-colorFrom: green
-colorTo: yellow
-sdk: docker
-app_port: 7860
-pinned: false
----
-
 # 🌍 GeoAI Soil Intelligence Platform
 
 <p align="center">
