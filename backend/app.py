@@ -9,6 +9,9 @@ Endpoints:
   GET  /health    — Liveness check
 """
 
+import os
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
+
 from fastapi import FastAPI, File, UploadFile, HTTPException
 from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
