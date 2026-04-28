@@ -199,6 +199,16 @@ async def predict(image: UploadFile = File(...)):
         soil = classes[soil_index]
         confidence = float(np.max(prediction)) * 100
 
+        # --- Reject Out-of-Distribution (OOD) / Low Confidence Images ---
+        if confidence < 70.0:
+            return JSONResponse(
+                status_code=400,
+                content={
+                    "error": "Image not recognized as soil. Please upload a clear image of soil.",
+                    "status": "failed"
+                }
+            )
+
         # --- Health score calculation (same as original) ---
         health_score = 0
 

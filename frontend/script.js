@@ -150,7 +150,7 @@ analyzeBtn.addEventListener("click", async ()=>{
   }
   catch(error){
     console.error("Prediction error:", error);
-    alert("⚠ Could not reach the AI server.\n\n" + error.message);
+    alert("⚠ Analysis Failed:\n\n" + error.message);
   }
   finally{
     hideLoading();
