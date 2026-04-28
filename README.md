@@ -26,6 +26,14 @@
 
 ---
 
+## 📊 Model Performance
+
+- **Total Images Evaluated**: 1,189
+- **Correct Predictions**: 1,160
+- **Overall Accuracy**: **97.56%**
+
+---
+
 ## 🧠 How It Works
 
 1. Upload a soil image  
