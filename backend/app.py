@@ -108,19 +108,20 @@ def init_db():
 # Lifespan: load model + init DB once at startup
 # ---------------------------------------------------------------------------
 
+def load_model():
+    global interpreter, input_details, output_details
+    if interpreter is None:
+        logger.info("Loading TFLite model (lazy loading)…")
+        model_path = os.path.join(os.path.dirname(__file__), "model.tflite")
+        interpreter = tflite.Interpreter(model_path=model_path)
+        interpreter.allocate_tensors()
+        input_details = interpreter.get_input_details()
+        output_details = interpreter.get_output_details()
+        logger.info("Model loaded successfully from %s", model_path)
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    global interpreter, input_details, output_details
-
     # --- Startup ---
-    logger.info("Loading TFLite model…")
-    model_path = os.path.join(os.path.dirname(__file__), "model.tflite")
-    interpreter = tflite.Interpreter(model_path=model_path)
-    interpreter.allocate_tensors()
-    input_details = interpreter.get_input_details()
-    output_details = interpreter.get_output_details()
-    logger.info("Model loaded successfully from %s", model_path)
-
     init_db()
 
     yield  # app is running
@@ -175,6 +176,9 @@ async def predict(image: UploadFile = File(...)):
         raise HTTPException(status_code=400, detail="Uploaded file is not an image")
 
     try:
+        # --- Lazy Load Model ---
+        load_model()
+
         # --- Read & preprocess (same as original) ---
         contents = await image.read()
         img_array = np.frombuffer(contents, dtype=np.uint8)
