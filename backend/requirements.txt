@@ -3,6 +3,5 @@ uvicorn
 gunicorn
 numpy<2
 opencv-python
---extra-index-url https://google-coral.github.io/py-repo/
-tflite-runtime
+tensorflow-cpu==2.15.0
 python-multipart

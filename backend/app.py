@@ -13,10 +13,7 @@ from fastapi import FastAPI, File, UploadFile, HTTPException
 from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
-try:
-    import tflite_runtime.interpreter as tflite
-except ImportError:
-    from tensorflow import lite as tflite
+from tensorflow import lite as tflite
 import numpy as np
 import cv2
 import os
