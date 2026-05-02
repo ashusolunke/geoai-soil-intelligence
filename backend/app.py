@@ -200,7 +200,7 @@ async def predict(image: UploadFile = File(...)):
         confidence = float(np.max(prediction)) * 100
 
         # --- Reject Out-of-Distribution (OOD) / Low Confidence Images ---
-        if confidence < 70.0:
+        if confidence < 50.0:
             return JSONResponse(
                 status_code=400,
                 content={
