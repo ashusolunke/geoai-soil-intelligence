@@ -200,7 +200,13 @@ async def predict(image: UploadFile = File(...)):
         confidence = float(np.max(prediction)) * 100
 
         # --- Reject Out-of-Distribution (OOD) / Low Confidence Images ---
-        if confidence < 35.0:
+        # Calculate the gap (margin) between the top prediction and the second best.
+        # This helps filter out random images where the model is just "guessing"
+        sorted_preds = np.sort(prediction[0])[::-1]
+        second_confidence = float(sorted_preds[1]) * 100
+        margin = confidence - second_confidence
+
+        if confidence < 48.0 or margin < 15.0:
             return JSONResponse(
                 status_code=400,
                 content={
