@@ -84,7 +84,7 @@
 
 Frontend (HTML, CSS, JS)  
 ↓  
-FastAPI Backend (Hugging Face Spaces)  
+FastAPI Backend
 ↓  
 TensorFlow Model (.h5)  
 ↓  
