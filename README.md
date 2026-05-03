@@ -5,7 +5,7 @@
 </p>
 
 <p align="center">
-  <b>AI-powered Soil Analysis using Computer Vision + Deep Learning</b><br>
+  <b>AI-powered Soil Analysis using Deep Learning</b><br>
   Detect soil type, predict health, and get smart agriculture & construction insights.
 </p>
 
