@@ -478,3 +478,85 @@ let randomSoil = soils[Math.floor(Math.random()*soils.length)];
 document.getElementById("mapSoil").innerText = randomSoil;
 
 });
+
+
+/* -------------------------------------------
+   REQUEST SOIL ANALYSIS FORM & HISTORY
+   ------------------------------------------- */
+
+const requestForm = document.getElementById("requestForm");
+const historyBtn = document.getElementById("historyBtn");
+const historyModal = document.getElementById("historyModal");
+const closeHistoryBtn = document.getElementById("closeHistoryBtn");
+const historyList = document.getElementById("historyList");
+const clearHistoryBtn = document.getElementById("clearHistoryBtn");
+
+function loadHistory() {
+  if (!historyList) return;
+  const history = JSON.parse(localStorage.getItem("soilRequests")) || [];
+  historyList.innerHTML = "";
+  if (history.length === 0) {
+    historyList.innerHTML = "<li style='padding: 10px; text-align:center;'>No history found.</li>";
+  } else {
+    history.forEach(req => {
+      const li = document.createElement("li");
+      li.style.borderBottom = "1px solid rgba(255,255,255,0.1)";
+      li.style.padding = "10px 0";
+      li.innerHTML = `<strong>${req.name}</strong> (${req.location})<br><small style="color:#aaa;">${req.date}</small>`;
+      historyList.appendChild(li);
+    });
+  }
+}
+
+if (requestForm) {
+  requestForm.addEventListener("submit", (e) => {
+    e.preventDefault();
+    const name = document.getElementById("reqName").value;
+    const email = document.getElementById("reqEmail").value;
+    const location = document.getElementById("reqLocation").value || "Unknown";
+    const desc = document.getElementById("reqDesc").value;
+
+    const requestData = {
+      name,
+      email,
+      location,
+      desc,
+      date: new Date().toLocaleString()
+    };
+
+    const history = JSON.parse(localStorage.getItem("soilRequests")) || [];
+    history.push(requestData);
+    localStorage.setItem("soilRequests", JSON.stringify(history));
+
+    alert("Your soil analysis request has been submitted successfully!");
+    requestForm.reset();
+    loadHistory();
+  });
+}
+
+if (historyBtn && historyModal) {
+  historyBtn.addEventListener("click", () => {
+    historyModal.style.display = historyModal.style.display === "none" ? "block" : "none";
+    loadHistory();
+  });
+}
+
+if (closeHistoryBtn) {
+  closeHistoryBtn.addEventListener("click", () => {
+    historyModal.style.display = "none";
+  });
+}
+
+if (clearHistoryBtn) {
+  clearHistoryBtn.addEventListener("click", () => {
+    if (confirm("Are you sure you want to clear your request history?")) {
+      localStorage.removeItem("soilRequests");
+      loadHistory();
+    }
+  });
+}
+
+// Load history on initial load
+document.addEventListener("DOMContentLoaded", () => {
+  loadHistory();
+});
