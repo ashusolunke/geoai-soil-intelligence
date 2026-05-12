@@ -22,6 +22,7 @@ import cv2
 import os
 import sqlite3
 import logging
+import threading
 
 # ---------------------------------------------------------------------------
 # Logging
@@ -37,6 +38,7 @@ logger = logging.getLogger("geoai")
 interpreter = None
 input_details = None
 output_details = None
+model_lock = threading.Lock()
 
 # ---------------------------------------------------------------------------
 # Soil domain data  (identical to original Flask app)
@@ -110,19 +112,36 @@ def init_db():
 
 def load_model():
     global interpreter, input_details, output_details
-    if interpreter is None:
-        logger.info("Loading TFLite model (lazy loading)…")
-        model_path = os.path.join(os.path.dirname(__file__), "model.tflite")
-        interpreter = tflite.Interpreter(model_path=model_path)
-        interpreter.allocate_tensors()
-        input_details = interpreter.get_input_details()
-        output_details = interpreter.get_output_details()
-        logger.info("Model loaded successfully from %s", model_path)
+    with model_lock:
+        if interpreter is None:
+            logger.info("Loading TFLite model (lazy loading)…")
+            model_path = os.path.join(os.path.dirname(__file__), "model.tflite")
+            interpreter = tflite.Interpreter(model_path=model_path)
+            interpreter.allocate_tensors()
+            input_details = interpreter.get_input_details()
+            output_details = interpreter.get_output_details()
+            logger.info("Model loaded successfully from %s", model_path)
+
+def warmup_model():
+    try:
+        logger.info("Starting background model warmup...")
+        load_model()
+        # Warmup inference to eliminate cold-start penalty
+        dummy_input = np.zeros((1, 128, 128, 3), dtype=np.float32)
+        with model_lock:
+            interpreter.set_tensor(input_details[0]['index'], dummy_input)
+            interpreter.invoke()
+        logger.info("Background model warmup complete. First user inference will be fast.")
+    except Exception as e:
+        logger.error("Warmup failed: %s", e)
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # --- Startup ---
     init_db()
+
+    # Start background warmup
+    threading.Thread(target=warmup_model, daemon=True).start()
 
     yield  # app is running
 
@@ -191,9 +210,10 @@ async def predict(image: UploadFile = File(...)):
         img_array = np.expand_dims(img_array, axis=0)
 
         # --- Prediction (using TFLite) ---
-        interpreter.set_tensor(input_details[0]['index'], img_array)
-        interpreter.invoke()
-        prediction = interpreter.get_tensor(output_details[0]['index'])
+        with model_lock:
+            interpreter.set_tensor(input_details[0]['index'], img_array)
+            interpreter.invoke()
+            prediction = interpreter.get_tensor(output_details[0]['index']).copy()
 
         soil_index = int(np.argmax(prediction))
         soil = classes[soil_index]
